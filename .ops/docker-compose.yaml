@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+  mitra:
+    build: ./mitrachatbot
+    image: weeman:latest
+    ports: 
+      - "8080:8080"
+    environment:
+      MONGO_DB_HOST: mongodb
+    networks:
+      - mitra
+  mongodb:
+    image: mongo:4.4
+    environment:
+      MONGO_INITDB_DATABASE: usersdb
+    networks:
+      - mitra
+    volumes:
+      - mongodb:/data/db
+
+networks:
+  mitra:
+  
+volumes:
+  mongodb:
