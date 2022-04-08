@@ -1,0 +1,112 @@
+<html>
+<body>
+    <meta name="viewport" content="width=device-width; initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="style.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+<script src="chat.js"></script>
+<script>
+$(function(){
+    let socket = io.connect(location.host)
+    
+    
+    let message = $('#message')
+    let send_message = $('#send_message')
+    let messages = $('#messages')
+    let name = $('#name')
+    let send_name = $('#send_name')
+
+    send_name.click(function() {
+        console.log(name.val())
+        socket.emit('update_user_info', {name : name.val()})
+        name.val("")
+    })
+
+    socket.emit('find_companion', {})
+
+    socket.on('request_connect_room', (data) => {
+        console.log("get request")
+        messages.append("<p>Connected to random room...</p>")
+        $('html, body').animate({scrollTop:$(document).height()}, 'slow');
+        if (data.room != undefined) {
+            socket.emit('connect_client_room', {room : data.room})
+            socket.room = data.room
+        }
+    })
+
+    socket.on('request_leave_room', (data) => {
+        messages.append("<p>Disconnected from room...</p>")
+        $('html, body').animate({scrollTop:$(document).height()}, 'slow');
+        socket.emit('leave_client_room', {room : data.room})
+        socket.room = undefined
+    })
+
+    let click_send_message = function() {
+        if (socket.room != undefined) {
+            socket.emit("new_message", {message : message.val(), room : socket.room})
+        } else {
+            alert("Вам не найдена комната, Вы бомж...")
+        }
+        
+        message.val("")
+    }
+
+    send_message.click(click_send_message)
+
+    message.keydown(function(e) {
+        if (e.keyCode === 13) {
+            click_send_message()
+        }
+    })
+
+    socket.on("new_message", (data) => {
+        console.log(data)
+        messages.append("<p>"+data.name+": "+data.message+"</p>")
+        $('html, body').animate({scrollTop:$(document).height()}, 'slow');
+        if (data.room != undefined) {
+            socket.room = data.room
+            socket.isConnected = data.isConnected
+        }
+    })
+
+    socket.on("reg_message", (data) => {
+        console.log(data)
+        messages.append("<p>"+data.name+": "+data.message+"</p>")
+        $('html, body').animate({scrollTop:$(document).height()}, 'slow');
+
+        let click_send_message = function() {
+            socket.emit("chat_message", {message : message.val(), room : data.room})
+            message.val("")
+        }
+
+        send_message.click(click_send_message)
+
+        message.keydown(function(e) {
+            if (e.keyCode === 13) {
+                click_send_message()
+            }
+        })
+        
+    })
+
+
+    $(window).bind('beforeunload', function() {
+})
+})
+</script>
+<div class="table">
+<div class="header">
+<input id="name" type="text" class="input_name"/>
+<input id="send_name" type="button" class="name_send" value="Send name"/>
+</div>
+<div  id="messages" class="wrapper">
+
+</div>
+    <div class="communicate">
+        <input id="message" type="text" class="message_input"/>
+        <input id="send_message" type="button" class="message_send" value="Send"/>
+    </div>
+</div>
+</body>
+
+</html>
