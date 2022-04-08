@@ -1,0 +1,55 @@
+.chat {
+    width: 100%;
+    height: 100%;
+}
+.table {
+    width: 100%;
+    height: 100%;
+    display: table;
+}
+.communicate {
+    position: fixed;
+    flex-direction: row;
+    display: inline-flex;
+    bottom: 10px;
+    width: 100%;
+}
+.header {
+    position: fixed;
+    display: block;
+    top: 10px;
+    width: 100%;
+}
+.message_input {
+    float: left;
+    overflow: hidden;
+    flex: 1 1 50px;
+    width: auto;
+    min-height: 50px;
+}
+.message_send {
+    float: right;
+    width: 50px;
+    flex: 0 0 50px;
+    min-height: 50px;
+    margin-right: 10px;
+}
+.input_name {
+    float: none;
+    overflow: hidden;
+    min-height: 50px;
+}
+.name_send {
+    min-height: 50px;
+    margin-right: 10px;
+}
+.wrapper {
+    display: block;
+    overflow-y: auto;
+    margin-top: 60px;
+    margin-bottom: 60px;
+    bottom: 50px;
+    top: 50px;
+    width: 100%; 
+    height: auto; 
+}
